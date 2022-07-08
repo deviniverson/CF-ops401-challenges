@@ -3,13 +3,13 @@
 # File Name: UptimeSensor.py
 # Author: Devin Iverson
 # Date: 07/07/2022
-# Purpose: Transmit single ICMP (ping) packet to a specific IP, evaluates response as success or failure
+# Purpose: Transmit single ICMP (ping) packet at a time to a specific IP, evaluates response as success or failure. Append result to Eventlogs.txt
 
 import datetime
 from icmplib import ping
 
 ip = "8.8.8.8"
-ping_attempts = input("How many ICMP attempts: ")
+#ping_attempts = input("How many ICMP attempts: ")
 # function to collect date and time 
 def Timestamp():
     now = datetime.datetime.now()
