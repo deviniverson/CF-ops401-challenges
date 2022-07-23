@@ -4,7 +4,6 @@
 # Author: Devin Iverson
 # Date: 07/21/2022
 # Purpose: Encrypt and decrypt messages and files
-from asyncore import file_dispatcher
 import os
 from cryptography.fernet import Fernet
 from pathlib import Path
@@ -30,7 +29,7 @@ def traffic_signal(menu_input):
     if menu_input == "1" or menu_input == "2":
         filepath = input("Provide FilePath to Target File: ")
         # confirm if filepath exists
-        if PathCheck(load_key) == True:
+        if PathCheck(filepath) == True:
             if menu_input == "1":
                 KeyGen()
                 key = load_key()
@@ -86,6 +85,7 @@ def message_encryter(message, key):
     #encoded_message = message.encode()
     f = Fernet(key)
     encryped_message = f.encrypt(message)
+    return str(encryped_message)
 
 #encrypt file
 def file_encrypter(filename, key):
@@ -102,7 +102,7 @@ def file_encrypter(filename, key):
 def message_decrypter(encrypted, key):
     f = Fernet(key)
     message = f.decrypt(encrypted)
-    return message
+    return str(message)
 
 #decrypt file
 def file_decrypter(filename, key):
