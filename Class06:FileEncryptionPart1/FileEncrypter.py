@@ -53,7 +53,7 @@ def traffic_signal(menu_input):
         message = message_decrypter(string, string_key)
         print(message)
     #Exit script
-    elif menu_input == 8:
+    elif menu_input == "8":
         exit
     #Number doesn't match menu
     else:
@@ -68,7 +68,7 @@ def PathCheck(file_name):
 #function to create and save encryption key if file is empty
 def KeyGen():
     KeyFile = load_key()
-    if os.path.getsize("key.key") == 0:
+    if os.path.getsize(KeyFile) == 0:
         key = Fernet.generate_key()
         with open("key.key", "wb") as key_file:
             key_file.write(key)
