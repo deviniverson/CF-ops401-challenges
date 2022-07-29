@@ -7,6 +7,10 @@
 import os
 from cryptography.fernet import Fernet
 from pathlib import Path
+import random
+from tkinter import *
+import sys
+import time
 
 # menu 
 def menu():
@@ -18,7 +22,7 @@ def menu():
     print("Mode 4. Decrypt a Message\n")
     print("Mode 5. Encrypt all Files in a Folder\n")
     print("Mode 6. Decrypt all Files in a Folder\n")
-    #print("Mode 7. Ransomware Simulation\n")
+    print("Mode 7. Ransomware Simulation\n")
     print("Mode 8. QUIT\n")
     print("-------------\n")
     menu_input = input("Enter Mode #: ")
@@ -62,10 +66,18 @@ def traffic_signal(menu_input):
 
     #Decrypt all files in a folder
     elif menu_input == '6':
-        pass
+        string = input("Provide Folder Name to Decrypt: ")
+        load_key()
+        string_key = load_key()
+        folder_decrypter(string, string_key)
+
+    #Malware Simulator
+    elif menu_input == '7':
+        malware_sim()
+    
     #Exit script
     elif menu_input == "8":
-        exit
+        exit()
     #Number doesn't match menu
     else:
         print("Mode not available at this time, please try again.")
@@ -80,7 +92,7 @@ def PathCheck(file_path):
 def KeyGen():
     key = Fernet.generate_key()
     string_key = str(key)
-    with open("key.key", "x") as key_file:
+    with open("key.key", "wb") as key_file:
         key_file.write(string_key)
     
 #function to load key
@@ -140,15 +152,39 @@ def folder_encrypter(filename, key):
             with open(filepath, 'w') as f:
                 print(len(data))
                 f.write(fkey.encrypt(data).encode())
-                print('Encrypt Done!')
+                print('Done!')
                 
 #decrypt all files of folder
 def folder_decrypter(folder, key):
-    pass
+    fkey = Fernet(key)
+    for root, dirs, files in os.walk("."):
+        print(files)
+        for filename in files:
+            filepath = Path.join(root, files)
+            #open and read file
+            with open(filepath, 'rb') as f:
+                data = f.read()
+            #open and encrypt file
+            with open(filepath, 'w') as f:
+                print(len(data))
+                f.write(fkey.decrypt(data).encode())
+                print('Done!')
+
+def color_change(virus):
+    list1=["red", "blue", "pink", "yellow", "orange", "teal", "green"]
+    virus.config(background=random.choice(list1))
+
+#malware simulator
+def malware_sim():
+    root=Tk()
+    root.geometry("700x250")
+    virus=Label(root,text="WARNING! Hacker Detected!", font=("times",50,"bold"))
+    virus.grid(row=2, column=0, pady=20, padx=20)
+    color_change(virus)
 
 # main function
 def main():
-    for i in range(3):
+    for i in range(5):
         input_num = menu()
         traffic_signal(input_num)
     
