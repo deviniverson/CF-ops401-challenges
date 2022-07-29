@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# File Name: FileEncrypter.py
+# File Name: FileEncrypterPart3.py
 # Author: Devin Iverson
 # Date: 07/21/2022
 # Purpose: Encrypt and decrypt messages and files
@@ -16,8 +16,8 @@ def menu():
     print("Mode 2. Decrypt a File\n")
     print("Mode 3. Encrypt a Message\n")
     print("Mode 4. Decrypt a Message\n")
-    #print("Mode 5. Encrypt all Files in a Folder\n")
-    #print("Mode 6. Decrypt all Files in a Folder\n")
+    print("Mode 5. Encrypt all Files in a Folder\n")
+    print("Mode 6. Decrypt all Files in a Folder\n")
     #print("Mode 7. Ransomware Simulation\n")
     print("Mode 8. QUIT\n")
     print("-------------\n")
@@ -31,7 +31,7 @@ def traffic_signal(menu_input):
         # confirm if filepath exists
         if PathCheck(filepath) == True:
             if menu_input == "1":
-                KeyGen()
+                load_key()
                 key = load_key()
                 file_encrypter(filepath, key)
             else:
@@ -42,7 +42,7 @@ def traffic_signal(menu_input):
     #Encrypt message, print to screen when done    
     elif menu_input == "3":
         string = input("Provide cleartext string to Encrypt: ").encode()
-        KeyGen()
+        load_key()
         string_key = load_key()
         message = message_encryter(string, string_key)
         print(message)
@@ -52,6 +52,17 @@ def traffic_signal(menu_input):
         string_key = load_key()
         message = message_decrypter(string, string_key)
         print(message)
+    #Encrypt all files in a folder
+    elif menu_input == '5':
+        string = input("Provide Folder Name to Encrypt: ")
+        load_key()
+        string_key = load_key()
+        folder_encrypter(string, string_key)
+        #complete this part
+
+    #Decrypt all files in a folder
+    elif menu_input == '6':
+        pass
     #Exit script
     elif menu_input == "8":
         exit
@@ -60,60 +71,80 @@ def traffic_signal(menu_input):
         print("Mode not available at this time, please try again.")
 
 #function to check for a valid path
-def PathCheck(file_name):
-    path_string = str(file_name)
+def PathCheck(file_path):
+    path_string = os.path.abspath(file_path)
     path = Path(path_string)
-    return path.is_file()
+    return path.exists()
 
 #function to create and save encryption key if file is empty
 def KeyGen():
-    KeyFile = load_key()
-    if os.path.getsize("key.key") == 0:
-        key = Fernet.generate_key()
-        with open("key.key", "wb") as key_file:
-            key_file.write(key)
-    else:
-        pass
+    key = Fernet.generate_key()
+    string_key = str(key)
+    with open("key.key", "x") as key_file:
+        key_file.write(string_key)
     
 #function to load key
 def load_key():
-    return open("key.key", "rb").read()
-
+    keyFile ="key.key"
+    if Path(keyFile).exists():
+        return open(keyFile, "rb").read()
+    else:
+        KeyGen()
 
 #encrypt message
 def message_encryter(message, key):
     #encoded_message = message.encode()
-    f = Fernet(key)
-    encryped_message = f.encrypt(message)
+    fkey = Fernet(key)
+    encryped_message = fkey.encrypt(message)
     return str(encryped_message)
 
 #encrypt file
 def file_encrypter(filename, key):
-    f = Fernet(key)
-    with open(filename, "rb") as file:
-        file_data = file.read()
+    fkey = Fernet(key)
+    with open(filename, "rb") as f:
+        file_data = f.read()
     #encrypt data
-    encrypted_data = f.encrypt(file_data)
+    encrypted_data = fkey.encrypt(file_data)
     #write encrypted data in original file
-    with open(filename, "wb") as file:
-        file.write(encrypted_data)
+    with open(filename, "wb") as f:
+        f.write(encrypted_data)
 
 #decrypt message
 def message_decrypter(encrypted, key):
-    f = Fernet(key)
-    message = f.decrypt(encrypted)
+    fkey = Fernet(key)
+    message = fkey.decrypt(encrypted)
     return str(message)
 
 #decrypt file
 def file_decrypter(filename, key):
-    f = Fernet(key)
-    with open(filename, "rb") as file:
-        encrypted_data = file.read()
+    fkey = Fernet(key)
+    with open(filename, "rb") as f:
+        encrypted_data = f.read()
     #decrypt data
-    decrypted_data = f.decrypt(encrypted_data)
+    decrypted_data = fkey.decrypt(encrypted_data)
     #write decrypted data in original file
-    with open(filename, "wb") as file:
-        file.write(decrypted_data)
+    with open(filename, "wb") as f:
+        f.write(decrypted_data)
+
+#encrypt all files of folder, use os.walk to recursivly complete this
+def folder_encrypter(filename, key):
+    fkey = Fernet(key)
+    for root, dirs, files in os.walk("."):
+        print(files)
+        for filename in files:
+            filepath = Path.join(root, files)
+            #open and read file
+            with open(filepath, 'rb') as f:
+                data = f.read()
+            #open and encrypt file
+            with open(filepath, 'w') as f:
+                print(len(data))
+                f.write(fkey.encrypt(data).encode())
+                print('Encrypt Done!')
+                
+#decrypt all files of folder
+def folder_decrypter(folder, key):
+    pass
 
 # main function
 def main():
