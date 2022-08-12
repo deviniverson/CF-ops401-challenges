@@ -9,7 +9,7 @@ import pyfiglet
 from rich.console import Console
 from tqdm import tqdm
 import time
-import scapy.all as scapy
+from scapy.all import IP, sr1, TCP, ICMP, sr
 import random
 port_list = []
 
@@ -61,19 +61,19 @@ def port_range():
 def send_SYN(ip, port_range):
     for target_port in port_range:
         source_port = random.randint(1035, 65534)
-        response = scapy.sr1(scapy.IP(dst = ip)/scapy.TCP(sport = source_port, dport = target_port, flags = "S"), timeout = 1, verbose = 0)
+        response = sr1(IP(dst = ip)/TCP(sport = source_port, dport = target_port, flags = "S"), timeout = 1, verbose = 0)
 
-        if (response.haslayer(scapy.TCP)):
-            if(response.getlayer(scapy.TCP).flags == 0x12):
+        if (response.haslayer(TCP)):
+            if(response.getlayer(TCP).flags == 0x12):
                 # Send RST to close connection
-                send_rst = scapy.sr(scapy.IP(dst = ip)/scapy.TCP(sport = source_port, dport = target_port, flags = "R"),timeout = 1, verbose = 0)
+                send_rst = sr(IP(dst = ip)/TCP(sport = source_port, dport = target_port, flags = "R"),timeout = 1, verbose = 0)
                 txt = ("{}:{} is open")
                 print(txt.format(ip, target_port))
-            elif (response.getlayer(scapy.TCP).flags == 0x14):
+            elif (response.getlayer(TCP).flags == 0x14):
                 txt = ("{}:{} is closed")
                 print(txt.format(ip, target_port))
-        elif (response.haslayer(scapy.ICMP)):
-            if(int(response.getlayer(scapy.ICMP).type) == 3 and int(response.getlayer(scapy.ICMP).code) in [1,2,3,9,10,13]):
+        elif (response.haslayer(ICMP)):
+            if(int(response.getlayer(ICMP).type) == 3 and int(response.getlayer(ICMP).code) in [1,2,3,9,10,13]):
                 txt = ("{}:{} is filtered and dropped")
                 print(txt.format(ip, target_port))
         elif response is None:
