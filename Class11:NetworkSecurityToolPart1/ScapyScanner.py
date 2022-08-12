@@ -9,17 +9,15 @@ import pyfiglet
 from rich.console import Console
 from tqdm import tqdm
 import time
-from scapy.all import TCP, IP, ICMP
-from scapy.sendrecv import sr, sr1
+import scapy.all as scapy
 import random
-
-con = Console()
 port_list = []
 
 # Hacker tool banner with fake loading bar for dramatic pause
 def script_banner():
     banner = pyfiglet.figlet_format("Scapy Scanner",font="banner3-D",justify="center")
-    con.print(banner, "A TCP Port Scanner used by all Green Hat Hackers",style="bold green")
+    Console(banner)
+    #con.print(banner, "A TCP Port Scanner used by all Green Hat Hackers",style="bold green")
     for i in tqdm(range(100)):
         time.sleep(0.2)
 
@@ -63,23 +61,24 @@ def port_range():
 def send_SYN(ip, port_range):
     for target_port in port_range:
         source_port = random.randint(1035, 65534)
-        response = sr1(IP(dst = ip)/TCP(sport = source_port, dport = target_port, flags = "S"), timeout = 1, verbose = 0)
+        response = scapy.sr1(scapy.IP(dst = ip)/scapy.TCP(sport = source_port, dport = target_port, flags = "S"), timeout = 1, verbose = 0)
 
-        if (response.haslayer(TCP)):
-            if(response.getlayer(TCP).flags == 0x12):
+        if (response.haslayer(scapy.TCP)):
+            if(response.getlayer(scapy.TCP).flags == 0x12):
                 # Send RST to close connection
-                send_rst = sr(IP(dst = ip)/TCP(sport = source_port, dport = target_port, flags = "R"),timeout = 1, verbose = 0)
-                print(f"{ip}:{target_port} is open")
-
-            elif (response.getlayer(TCP).flags == 0x14):
-                print(f"{ip}:{target_port} is closed")
-
-        elif (response.haslayer(ICMP)):
-            if(int(response.getlayer(ICMP).type) == 3 and int(response.getlayer(ICMP).code) in [1,2,3,9,10,13]):
-                print(f"{ip}:{target_port} is filtered and dropped")
-
+                send_rst = scapy.sr(scapy.IP(dst = ip)/scapy.TCP(sport = source_port, dport = target_port, flags = "R"),timeout = 1, verbose = 0)
+                txt = ("{}:{} is open")
+                print(txt.format(ip, target_port))
+            elif (response.getlayer(scapy.TCP).flags == 0x14):
+                txt = ("{}:{} is closed")
+                print(txt.format(ip, target_port))
+        elif (response.haslayer(scapy.ICMP)):
+            if(int(response.getlayer(scapy.ICMP).type) == 3 and int(response.getlayer(scapy.ICMP).code) in [1,2,3,9,10,13]):
+                txt = ("{}:{} is filtered and dropped")
+                print(txt.format(ip, target_port))
         elif response is None:
-            print(f"{ip}:{target_port}is filtered and dropped")
+            txt = ("{}:{}is filtered and dropped")
+            print(txt.format(ip, target_port))
 
 # main function
 def main():
