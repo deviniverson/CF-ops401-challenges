@@ -1,8 +1,8 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
-# File Name: ScapyScanner.py
+# File Name: ScapyScannerPart2.py
 # Author: Devin Iverson
-# Date: 08/08/22
+# Date: 08/13/22
 # Purpose: Network Security Tool with scapy
 
 import pyfiglet
@@ -11,21 +11,23 @@ from tqdm import tqdm
 import time
 from scapy.all import IP, sr1, TCP, ICMP, sr
 import random
+from ipaddress import IPv4Network
+
+con = Console()
 port_list = []
 
 # Hacker tool banner with fake loading bar for dramatic pause
 def script_banner():
     banner = pyfiglet.figlet_format("Scapy Scanner",font="banner3-D",justify="center")
-    Console(banner)
-    #con.print(banner, "A TCP Port Scanner used by all Green Hat Hackers",style="bold green")
+    #Console(banner)
+    con.print(banner, "A TCP Port Scanner used by all Green Hat Hackers",style="bold green")
     for i in tqdm(range(100)):
         time.sleep(0.2)
 
 # Define target ip address
 def ip():
-    while True:
-            target = input("Enter Host IP address: (input in IPv4 format '***.***.***.***') ")
-            return target
+    target = input("Enter Host IP address: (input in IPv4 format '***.***.***.***') ")
+    return target
         
 # Define TCP port range
 def port_range():
@@ -81,9 +83,47 @@ def send_SYN(ip, port_range):
             txt = ("{}:{}is filtered and dropped")
             print(txt.format(ip, target_port))
 
+def icmp_ping(network):
+
+    addresses = IPv4Network(network)
+    live_count = 0
+
+    for host in addresses:
+        if (host in (addresses.netowrk_address, addresses.broadcast_address)):
+            # Skip network and broadcast
+            continue
+
+        response = sr1(IP(dst=str(host))/ICMP(), timeout=2, verbose=0)
+
+        if (int(response.getlayer(ICMP).type)==3 and int(response.getlayer(ICMP).code) in [1,2,3,9,10,13]):
+            txt = ("{} is blocking ICMP.")
+            print(txt.format(host))
+        elif response is None:
+            txt = ("{} is down or not responding.")
+            print(txt.format(host))
+        else:
+            txt = ("{} is responding.")
+            print(txt.format(ip))
+            live_count += 1
+
+    txt = ("{}/{} hosts are online.")
+    print(txt.format(live_count, addresses.num_addresses))
+
+def choice():
+    tool = input("Enter 1 for Port Scanning or 2 for ICMP Ping or 3 to exit: ")
+    if tool == "1":
+        targetIP = ip()
+        port_list = port_range()
+        send_SYN(targetIP, port_list)
+    elif tool == "2":
+        networkblock = input("Enter IP range to ping: (Include CIDR block, for example '10.10.0.0/24')")
+        icmp_ping(networkblock)
+    elif tool == "3":
+        exit()
+    else:
+        print("Invalid entry, try again.")
+
 # main function
 def main():
     script_banner()
-    targetIP = ip()
-    port_list = port_range()
-    send_SYN(targetIP, port_list)
+    choice()
