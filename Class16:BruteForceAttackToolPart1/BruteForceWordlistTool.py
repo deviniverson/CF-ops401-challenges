@@ -4,8 +4,10 @@
 # Author: Devin Iverson
 # Date: 08/23/2022
 # Purpose: Custom tool that performs brute force attacks
+
 import pyfiglet
 from rich.console import Console
+from rich.table import Table
 from tqdm import tqdm, trange
 import time
 
@@ -45,7 +47,7 @@ def script_banner():
             time.sleep(0.05)  
         for k in trange((100), desc='Deploying Exploit',colour='RED'):
             time.sleep(0.1)
-        print('\n')
+    print('\n')
 
 # locate wordlist and access it
 def wordlist_finder():
@@ -78,13 +80,14 @@ def mode3():
     l,c,n,s = 0,0,0,0
     keyword = str(input("Enter password to test: "))
     while True:
-        complexity_code = int(input("Enter 4 digit Password Complexity Code (length,capitals,numbers,symbols): "))
-        if complexity_code == 4:
+        complexity_code = int(input("Enter 4 digit Password Complexity Code: Example Code: 5432 (length,capitals,numbers,symbols): "))
+        complexity_str = str(complexity_code)
+        if len(complexity_str) == 4:
             break
-    length = complexity_code[0]
-    capitals = complexity_code[1]
-    nums = complexity_code[2]
-    symbols = complexity_code[3]
+    length = int(complexity_str[0])
+    capitals = int(complexity_str[1])
+    nums = int(complexity_str[2])
+    symbols = int(complexity_str[3])
     for k in keyword:
         l+=1
         if (k.isupper()):
@@ -95,10 +98,24 @@ def mode3():
             s+=1
     
     if (l>=length and c>=capitals and n>=nums and s>=symbols):
-        print("SUCCESS")
+        con.print("SUCCESS", style="bold green")
     else:
-        txt = ("Password Failed \n Complexity: Required: Provided: \n Length:   {0}   {1}\n   Capitals:   {2}   {3}\n   Numbers:   {4}   {5}\n   Symbols:   {6}   {7}")
-        print(txt.format(length,l,capitals,c,nums,n,symbols,s))
+        #txt = ("Password Failed \n Complexity: Required: Provided: \n Length:   {0}   {1}\n   Capitals:   {2}   {3}\n   Numbers:   {4}   {5}\n   Symbols:   {6}   {7}")
+        #print(txt.format(length,l,capitals,c,nums,n,symbols,s))
+
+        # print table of provided requirements and the end result of processing password
+        table = Table(title="Password Failed")
+
+        table.add_column("Category", justify="right", no_wrap=True)
+        table.add_column("Required by Code", justify="center")
+        table.add_column("Password Provided", justify="right")
+
+        table.add_row("Length", str(length), str(l))
+        table.add_row("Capitals", str(capitals), str(c))
+        table.add_row("Numbers", str(nums), str(n))
+        table.add_row("Symbols", str(symbols), str(s))
+
+        con.print(table)
 
 # main function
 def main():
@@ -108,9 +125,11 @@ def main():
         if mode in '123':
             traffic_signal(mode)
             break
+        elif mode == '9':
+            break
         else:
+            con.print("Mode not available at this time, try again", style='red1')
             continue
-
 main()
 
 # test wordlist file path
