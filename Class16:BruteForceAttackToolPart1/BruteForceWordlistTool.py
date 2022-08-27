@@ -124,7 +124,6 @@ def main():
         mode = menu()
         if mode in '123':
             traffic_signal(mode)
-            break
         elif mode == '9':
             break
         else:
