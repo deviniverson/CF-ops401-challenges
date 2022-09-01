@@ -1,4 +1,4 @@
-password
+notit
 cross
 black
 tools
@@ -8,5 +8,5 @@ devin
 forget
 happy
 python
-notit
+password
 yourit

