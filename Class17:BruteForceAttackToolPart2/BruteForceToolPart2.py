@@ -179,7 +179,7 @@ def mode3():
 
 # main function
 def main():
-    #script_banner()
+    script_banner()
     while True:
         mode = menu()
         if mode in '123':
