@@ -8,9 +8,9 @@
 import pyfiglet
 from rich.console import Console
 from rich.table import Table
-from tqdm import tqdm, trange
 import time
 import paramiko, sys, os, socket
+from zipfile import ZipFile
 
 global host, username, line, txt_file
 
@@ -24,6 +24,8 @@ def menu():
     con.print("Mode #1: Offensive Tool - Dictionary Iterator", style="red1")
     con.print("Mode #2: Defensive Tool - Password Recognized", style="blue")
     con.print("Mode #3: Defensive Tool - Password Complexity", style="blue")
+    con.print("Mode #4: Defensive Tool - Zip File", style="blue")
+    con.print("Mode #5: Offensive Tool - Brute Force ZipFile", style="red1")
     con.print("Mode #9: Exit Tool")
     con.print("-------------")
     
@@ -41,21 +43,36 @@ def traffic_signal(mode):
         mode2()
     elif mode == '3':
         mode3()
+    elif mode == '4':
+        mode4()
+    elif mode == '5':
+        mode5()
     elif mode == '9':
         exit
     else:
         print("Mode is not available at this time, please try again.")
         return 0
 
+# zip file
+def zipFile(unzippedfile, password):
+    try:
+        pass
+
+# unzip file
+def zipBreaker(zip_file, password):
+    try:
+        with ZipFile(zip_file, 'r') as z:
+            z.setpassword(password)
+            z.extractall()
+            print("File Extracted")
+    except Exception as e:
+        print("Invalid file", e)
+
 # script banner with interesting loading bars
 def script_banner():
     banner = pyfiglet.figlet_format("Brute Force",font="banner3-D",width=100,justify="center")
     con.print(banner, "A Brute Force Wordlist Tool used by all the cool hackers!",style="bold green1")
-    for i in tqdm(range(1), desc='Root Privileges Acquired',colour='GREEN'):
-        for j in trange((100), desc='Searching for Exploits',colour='WHITE'):
-            time.sleep(0.05)  
-        for k in trange((100), desc='Deploying Exploit',colour='RED'):
-            time.sleep(0.1)
+    time.sleep(0.1)
     print('\n')
 
 # locate wordlist and access it
@@ -177,12 +194,31 @@ def mode3():
 
         con.print(table)
 
+# zip file
+def mode4():
+    print()
+
+# brute force zip file
+def mode5(wordlist, zip_file):
+    for word in wordlist:
+        try:
+            response = 
+
+            if response == 0:
+                txt = "{} User: {} Pass Found: {} {}"
+                print(txt.format(line, username, password, line))
+                sys.exit(0)
+            elif response == 1:
+                txt = "User: {} Pass: {} Login Incorrect!"
+                print(txt.format(username, password))
+
+
 # main function
 def main():
     script_banner()
     while True:
         mode = menu()
-        if mode in '123':
+        if mode in '12345':
             traffic_signal(mode)
         elif mode == '9':
             break

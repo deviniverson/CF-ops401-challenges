@@ -140,11 +140,23 @@ def folder_encrypter(filename, key):
             with open(filepath, 'w') as f:
                 print(len(data))
                 f.write(fkey.encrypt(data).encode())
-                print('Encrypt Done!')
+                print('Encryption Done!')
                 
 #decrypt all files of folder
 def folder_decrypter(folder, key):
-    pass
+    fkey = Fernet(key)
+    for root, dirs, files in os.walk("."):
+        print(files)
+        for filename in files:
+            filepath = Path.join(root, files)
+            #open and read file
+            with open(filepath, 'rb') as f:
+                data = f.read()
+            #open and encrypt file
+            with open(filepath, 'w') as f:
+                print(len(data))
+                f.write(fkey.encrypt(data).encode())
+                print('Decryption Done!')
 
 # main function
 def main():
