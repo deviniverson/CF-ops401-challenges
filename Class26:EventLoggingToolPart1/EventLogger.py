@@ -10,6 +10,8 @@ from cryptography.fernet import Fernet
 from pathlib import Path
 import logging
 
+logging.basicConfig(filename='log.txt', format='%(asctime)s | %(levelname)s | %(message)s')
+
 # menu 
 def menu():
     print("* MAIN MENU *\n")
@@ -23,9 +25,18 @@ def menu():
     menu_input = input("Enter Mode #: ")
     return menu_input
 
-def log():
-    logging.basicConfig(filename='log.txt', format='%(asctime)s | %(levelname)s | %(message)s')
-
+#logging event
+def log_event(lvl, message, userInput):
+    if lvl == 'debug':
+        logging.debug(message)
+    elif lvl == 'info':
+        logging.info(message + userInput)
+    elif lvl == 'warning':
+        logging.warning(message + userInput)
+    elif lvl == 'error':
+        logging.error(message + userInput)
+    elif lvl == 'critical':
+        logging.critical(message + userInput)
 
 #depending on the users input, this will guide them 
 def traffic_signal(menu_input):
@@ -59,8 +70,8 @@ def traffic_signal(menu_input):
     elif menu_input == "8":
         exit
     #Number doesn't match menu
-    else:
-        print("Mode not available at this time, please try again.")
+    #else:
+    #    print("Mode not available at this time, please try again.")
 
 #function to check for a valid path
 def PathCheck(file_name):
@@ -70,7 +81,7 @@ def PathCheck(file_name):
 
 #function to create and save encryption key if file is empty
 def KeyGen():
-    KeyFile = load_key()
+    keyFile = load_key()
     if os.path.getsize("key.key") == 0:
         key = Fernet.generate_key()
         with open("key.key", "wb") as key_file:
@@ -88,7 +99,9 @@ def message_encryter(message, key):
     #encoded_message = message.encode()
     f = Fernet(key)
     encryped_message = f.encrypt(message)
+    log_event('info', 'message was encrypted successfully with key=', key)
     return str(encryped_message)
+
 
 #encrypt file
 def file_encrypter(filename, key):
@@ -120,8 +133,11 @@ def file_decrypter(filename, key):
 
 # main function
 def main():
-    for i in range(3):
+    try:
         input_num = menu()
         traffic_signal(input_num)
+    except:
+        log_event('error','menu input invalid, user input=', input_num)
     
+#create_log()
 main()
