@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
-# File Name: EventLogger.py
+# File Name: EventLoggerPart2.py
 # Author: Devin Iverson
-# Date: 09/27/2022
+# Date: 09/29/2022
 # Purpose: Added logging on to a previously created python script.
 
 import os
