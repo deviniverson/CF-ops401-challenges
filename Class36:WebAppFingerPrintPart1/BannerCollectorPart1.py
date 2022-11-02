@@ -3,7 +3,7 @@
 # File Name: BannerCollectorPart1.py
 # Author: Devin Iverson
 # Date: 10/31/2022
-# Purpose: 
+# Purpose: Prompt user for URL or IP address and target port and use netcat, telnet, nmap on that target.
 
 import subprocess
 
