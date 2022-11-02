@@ -4,31 +4,46 @@
 # Author: Devin Iverson
 # Date: 10/31/2022
 # Purpose: 
-import socket
 
-# Prompt for user to enter target URL or IP address
-def target_address():
-    target = string(input("Enter target URL or IP address: "))
-    return target
+import os
 
-# Prompt user to enter target port
-def target_port():
-    port = int(input("Enter target port: "))
-    return port
-# Netcat banner grabbing technique
 def netcat(address, port):
-    s = socket.socket()
-    s.connect((address,port))
-    
+    os.system("nc " + address + " " + port)
 
-# telnet banner grabbing technique
+def telnet(address, port):
+    os.system("telnet " + address + " " + port)
 
-# Nmap banner grabbing technique
+def nmap(address, port):
+    os.system("nmap " + address + " " + port)
 
-# WHatWeb banner grabbing technique
+def whatweb(address):
+    os.system("whatweb " + "http://" + address)
 
-# cURL banner grabbing technique
+def curl(address):
+    os.system("curl -s -I " + address)
 
-# Main function
+def target_address():
+    target = input("Enter target URL or IP address: ")
+    return str(target)
 
+def target_port():
+    port = input("Enter target port: ")
+    return str(port)
 
+def main():
+    address = target_address()
+    port = target_port()
+    print("")
+    netcat(address, port)
+    print("")
+    telnet(address, port)
+    print("")
+    nmap(address, port)
+    print("")
+    whatweb(address)
+    print("")
+    curl(address)
+
+main()
+
+ 
