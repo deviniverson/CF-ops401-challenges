@@ -5,39 +5,39 @@
 # Date: 10/31/2022
 # Purpose: 
 
-import os
-import time
+import subprocess
 
+#netcat
 def netcat(address, port):
-    mode = os.system("nc " + address + " " + port)
-    time.sleep(5)
+    mode = subprocess.Popen(["nc " + address + " " + port], shell=True)
     mode.terminate()
 
-
+#telnet 
 def telnet(address, port):
-    mode = os.system("telnet " + address + " " + port)
-    time.sleep(5)
+    mode = subprocess.Popen(["telnet " + address + " " + port], shell=True)
     mode.terminate()
 
+#nmap
 def nmap(address, port):
-    mode = os.system("nmap " + address + " " + port)
-    time.sleep(5)
+    mode = subprocess.Popen(["nmap " + address + " " + port], shell=True)
     mode.terminate()
 
+#whatweb
 def whatweb(address):
-    mode = os.system("whatweb " + "http://" + address)
-    time.sleep(5)
+    mode = subprocess.Popen(["whatweb " + "http://" + address], shell=True)
     mode.terminate()
 
+#cURL
 def curl(address):
-    mode = os.system("curl -s -I " + address)
-    time.sleep(5)
+    mode = subprocess.Popen(["curl -s -I " + address], shell=True)
     mode.terminate()
 
+#Prompt user to enter URL or IP address
 def target_address():
     target = input("Enter target URL or IP address: ")
     return str(target)
 
+#Prompt user to enter port
 def target_port():
     port = input("Enter target port: ")
     return str(port)
@@ -57,5 +57,3 @@ def main():
     curl(address)
 
 main()
-
- 
