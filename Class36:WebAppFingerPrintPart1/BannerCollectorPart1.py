@@ -6,21 +6,33 @@
 # Purpose: 
 
 import os
+import time
 
 def netcat(address, port):
-    os.system("nc " + address + " " + port)
+    mode = os.system("nc " + address + " " + port)
+    time.sleep(5)
+    mode.terminate()
+
 
 def telnet(address, port):
-    os.system("telnet " + address + " " + port)
+    mode = os.system("telnet " + address + " " + port)
+    time.sleep(5)
+    mode.terminate()
 
 def nmap(address, port):
-    os.system("nmap " + address + " " + port)
+    mode = os.system("nmap " + address + " " + port)
+    time.sleep(5)
+    mode.terminate()
 
 def whatweb(address):
-    os.system("whatweb " + "http://" + address)
+    mode = os.system("whatweb " + "http://" + address)
+    time.sleep(5)
+    mode.terminate()
 
 def curl(address):
-    os.system("curl -s -I " + address)
+    mode = os.system("curl -s -I " + address)
+    time.sleep(5)
+    mode.terminate()
 
 def target_address():
     target = input("Enter target URL or IP address: ")
