@@ -12,7 +12,7 @@ import logging
 from logging.handlers import RotatingFileHandler
 
 logging.basicConfig(
-    handlers=[RotatingFileHandler('test.log', maxBytes=20, backupCount=5)], 
+    handlers=[RotatingFileHandler('test.log', maxBytes=200, backupCount=5)], 
     format='%(asctime)s | %(levelname)s | %(message)s')
 
 handler = logging.StreamHandler()
