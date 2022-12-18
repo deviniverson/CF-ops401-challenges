@@ -11,7 +11,12 @@ from pathlib import Path
 import logging
 from logging.handlers import RotatingFileHandler
 
-logging.basicConfig(handlers=[RotatingFileHandler('log.txt', maxBytes=2000, backupCount=5)], format='%(asctime)s | %(levelname)s | %(message)s')
+logging.basicConfig(
+    handlers=[RotatingFileHandler('test.log', maxBytes=20, backupCount=5)], 
+    format='%(asctime)s | %(levelname)s | %(message)s')
+
+handler = logging.StreamHandler()
+file_handler = logging.FileHandler('test.log')
 
 # menu 
 def menu():
@@ -92,8 +97,10 @@ def KeyGen():
     
 #function to load key
 def load_key():
-    return open("key.key", "rb").read()
-
+    try:
+        return open("key.key", "rb").read()
+    except FileNotFoundError as e:
+        log_event('error', 'key.key was not found')
 
 #encrypt message
 def message_encryter(message, key):
