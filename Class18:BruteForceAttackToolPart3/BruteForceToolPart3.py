@@ -24,8 +24,7 @@ def menu():
     con.print("Mode #1: Offensive Tool - Dictionary Iterator", style="red1")
     con.print("Mode #2: Defensive Tool - Password Recognized", style="blue")
     con.print("Mode #3: Defensive Tool - Password Complexity", style="blue")
-    con.print("Mode #4: Defensive Tool - Zip File", style="blue")
-    con.print("Mode #5: Offensive Tool - Brute Force ZipFile", style="red1")
+    con.print("Mode #4: Offensive Tool - Brute Force ZipFile", style="red1")
     con.print("Mode #9: Exit Tool")
     con.print("-------------")
     
@@ -45,18 +44,11 @@ def traffic_signal(mode):
         mode3()
     elif mode == '4':
         mode4()
-    elif mode == '5':
-        mode5()
     elif mode == '9':
         exit
     else:
         print("Mode is not available at this time, please try again.")
         return 0
-
-# zip file
-def zipFile(unzippedfile, password):
-    try:
-        pass
 
 # unzip file
 def zipBreaker(zip_file, password):
@@ -194,31 +186,31 @@ def mode3():
 
         con.print(table)
 
-# zip file
-def mode4():
-    print()
-
 # brute force zip file
-def mode5(wordlist, zip_file):
-    for word in wordlist:
-        try:
-            response = 
+def mode4():
+    zip_file = "TestFile.zip"
+    wordlist = "rockyou.txt"
+    with open(wordlist, "r") as wlist:
+        for word in wlist:
+            passwd = word.strip("/n")
 
-            if response == 0:
-                txt = "{} User: {} Pass Found: {} {}"
-                print(txt.format(line, username, password, line))
-                sys.exit(0)
-            elif response == 1:
-                txt = "User: {} Pass: {} Login Incorrect!"
-                print(txt.format(username, password))
-
+            try:
+                with ZipFile(zip_file) as zf:
+                    zf.extractall(pwd=bytes(passwd, 'utf-8'))
+                    txt = "{} User: {} Pass Found: {} {}"
+                    print(txt.format(line, username, passwd, line))
+                    break
+            
+            except RuntimeError:
+                print("Not the Password")
+                break
 
 # main function
 def main():
     script_banner()
     while True:
         mode = menu()
-        if mode in '12345':
+        if mode in '1234':
             traffic_signal(mode)
         elif mode == '9':
             break
@@ -226,6 +218,3 @@ def main():
             con.print("Mode not available at this time, try again", style='red1')
             continue
 main()
-
-# test wordlist file path
-# /Users/deviniverson/GitHub/CF-ops401-challenges/Class16:BruteForceAttackToolPart1/wordlist.txt
